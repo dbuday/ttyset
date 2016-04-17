@@ -1,0 +1,410 @@
+#!/bin/bash
+#
+#
+#############TTY SET########################
+#
+##########################################
+### Skripta za namještanje fonta i boja za terminal - tty ###
+##########################################
+#
+#  Email:  davor.buday@gmail.com
+#
+#########################################################
+# Odabir bilo kojeg slova na prvom pitanju - postavlja zadane parametre i izvršava #
+#########################################################
+# Svaki krivi odabir postavlja zadani parametar #
+#################################
+### LANGUAGE SELECTION -- LINE 60 ######
+#################################
+
+
+
+###Podizanje potrebnog modula za beep - za zvuk odkomentiraj slijedeci red####
+#sudo modprobe pcspkr
+#########################################################
+
+#########BOJE#########
+crno=`tput setaf 0`
+crveno=`tput setaf 1`
+zeleno=`tput setaf 2`
+zuto=`tput setaf 3`
+plavo=`tput setaf 4`
+ljubicasto=`tput setaf 5`
+svplavo=`tput setaf 6`
+bijelo=`tput setaf 7`
+crno_back=`tput setab 0`
+bijelo_back=`tput setab 7`
+bez_boje=`tput sgr0`
+bold=`tput bold`
+blink=`tput blink`
+
+########## FUNKCIJE ############
+#varijable
+#velicina_fonta
+#postavi_font
+#dostupni_fontovi
+#dostupne_boje
+#boja_pozadine
+#boja_fonta
+#zadano
+#izvrsi
+#izlaz
+##############################
+
+
+varijable() {
+##########################
+###### postavlja varijable #######
+##########################
+broj_promasaja=0
+
+########   Jezik      #########    Language  #########
+
+####### OTKOMENTIRAJ ŽELJENI JEZIK #############
+####### UNCOMMENT DESIRED LANGUAGE##########
+#lang="hr"
+lang="en"
+#########################################
+
+####boje  ##### colors ####
+if [[ $lang == "hr" ]]; then
+	black="CRNO"
+	white="BIJELO"
+	green="ZELENO"
+	red="CRVENO"
+	blue="PLAVO"
+	yellow="ŽUTO"
+	magenta="LJUBIČASTO"
+	lightblue="SVJETLO PLAVO"
+fi
+
+if [[ $lang == "en" ]]; then
+	black="BLACK"
+	white="WHITE"
+	green="GREEN"
+	red="RED"
+	blue="BLUE"
+	yellow="YELLOW"
+	magenta="MAGENTA"
+	lightblue="LIGHT BLUE"
+fi
+
+
+##############################################
+########## TEKST  ######  TEXT ####################
+##############################################
+
+################### HR ###########################
+if [[ $lang == "hr" ]]; then
+	echo_odabir_velicina="${zuto}${bold}Odaberite broj ispred željene veličine${bez_boje}${zuto} (slovo za zadane postavke)${bold}:  ${bez_boje}"
+	echo_odabir_pozadina="${zuto}${bold}Boja pozadine?${bez_boje}"
+	echo_odabir_fonta="${zuto}${bold}Boja fonta?${bez_boje}"
+	echo_odabran_font="Odabran font: "
+	echo_odabrano="Odabrano: "
+	echo_zadana_velicina="Ništa nije odabrano  - postavljam veličinu 24."
+	echo_zadana_pozadina="Ništa nije odabrano - postavljam crnu pozadinu"
+	echo_zadani_font="Ništa nije odabrano - postavljam zeleni font"
+	echo_dostupni_fontovi="${svplavo}${bold}Postavljam veličinu fonta.  Dostupne veličine fonta su${bez_boje}:"
+	echo_dostupne_boje_prvi="${svplavo}${bold}Postavljam boju pozadine i slova.  Dostupne boje su:${bez_boje}"
+	echo_dostupne_boje_drugi="${zuto}Odaberite broj ispred željene boje.${bez_boje} "
+	echo_provjera1="Font i pozadina su jednaki - "
+	echo_provjera2="Postavite ponovo boju fonta."
+	echo_zadano="Previše propalih pokušaja. Postavljam na zadano."
+	echo_set="Postavljeno:  "
+	echo_set_font="Velicina fonta - "
+	echo_set_pozadina="Boja pozadine - "
+	echo_set_boja="Boja fonta - "
+fi
+
+################### EN ##########################
+if [[ $lang == "en" ]]; then
+	echo_odabir_velicina="${zuto}${bold}Choose the number before desired color${bez_boje}${zuto} (a letter for default settings)${bold}:  ${bez_boje}"
+	echo_odabir_pozadina="${zuto}${bold}Background color?${bez_boje}"
+	echo_odabir_fonta="${zuto}${bold}Font color?${bez_boje}"
+	echo_odabran_font="Chosen font: "
+	echo_odabrano="You have chosen: "
+	echo_zadana_velicina="Nothing is chosen  - font size will be set to 24."
+	echo_zadana_pozadina="Nothing is chosen - black background will be set"
+	echo_zadani_font="Nothing is chosen - green font color will be set"
+	echo_dostupni_fontovi="${svplavo}${bold}Setting font size.  Available font sizes are${bez_boje}:"
+	echo_dostupne_boje_prvi="${svplavo}${bold}Setting background and font color.  Available colors are:${bez_boje}"
+	echo_dostupne_boje_drugi="${zuto}Choose the number before desired color.${bez_boje} "
+	echo_provjera1="Same font and background colors - "
+	echo_provjera2="Set font colour again."
+	echo_zadano="Too many tries. Defaults will be loaded."
+	echo_set="Set:  "
+	echo_set_font="Font size - "
+	echo_set_pozadina="Backgound color - "
+	echo_set_boja="Font color - "
+fi
+}
+
+
+velicina_fonta() {
+	dostupni_fontovi
+	echo -e '\a'
+	echo $echo_odabir_velicina; read fontsize
+if [[ $fontsize == [a-z] ]] || [[ $fontsize == [A-Z] ]]; then
+	zadano	
+fi
+
+
+re='^[0-9]+$'
+if ! [[ $fontsize =~ $re ]]
+	then fontsize=9
+fi
+
+
+if [ $fontsize -eq 1 ]
+then
+	fv=12
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus12x6.psf.gz"
+elif [ $fontsize -eq 2 ]
+then
+	fv=14
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus14.psf.gz"
+elif [ $fontsize -eq 3 ]
+then
+	fv=16
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus16.psf.gz"
+elif [ $fontsize -eq 4 ]
+then
+	fv=20
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus20x10.psf.gz"
+elif [ $fontsize -eq 5 ]
+then
+	fv=22
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus22x11.psf.gz"
+elif [ $fontsize -eq 6 ]
+then
+	fv=24
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus24x12.psf.gz"
+elif [ $fontsize -eq 7 ]
+then
+	fv=28
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus28x14.psf.gz"
+elif [ $fontsize -eq 8 ]
+then
+	fv=32
+	echo $echo_odabran_font $fv
+	fontfile="/usr/share/consolefonts/Uni3-Terminus32x16.psf.gz"
+else
+	echo $echo_zadana_velicina
+	fv=24
+	fontfile="/usr/share/consolefonts/Uni3-Terminus24x12.psf.gz"	
+fi
+}
+ 
+
+postavi_font() {
+	unset font
+	unset font_osnova
+	read font
+
+re='^[0-9]+$'
+if ! [[ $fontsize =~ $re ]]
+	then fontsize=9
+fi
+
+	if [ "$font" == "1" ]
+	then
+		font_osnova="black"
+	elif [ "$font" == "2" ]
+	then
+		font_osnova="white"
+	elif [ "$font" == "3" ]
+	then
+		font_osnova="green"
+	elif [ "$font" == "4" ]
+	then
+		font_osnova="red"
+	elif [ "$font" == "5" ]
+	then
+		font_osnova="blue"
+	elif [ "$font" == "6" ]
+	then
+		font_osnova="yellow"
+	elif [ "$font" == "7" ]
+	then
+		font_osnova="magenta"
+	elif [ "$font" == "8" ]
+	then
+		font_osnova="cyan"
+	else
+		font_osnova="promasaj"
+fi
+}
+
+
+dostupni_fontovi() {
+	echo " "
+	echo $echo_dostupni_fontovi
+	echo "${bold}1${bez_boje}....................................12"
+	echo "${bold}2${bez_boje}....................................14"
+	echo "${bold}3${bez_boje}....................................16"
+	echo "${bold}4${bez_boje}....................................20"
+	echo "${bold}5${bez_boje}....................................22"
+	echo "${bold}6${bez_boje}....................................24"
+	echo "${bold}7${bez_boje}....................................28"
+	echo "${bold}8${bez_boje}....................................32"
+}
+
+
+dostupne_boje() {
+	echo " "
+	echo $echo_dostupne_boje_prvi
+	echo "${bold}1${bez_boje}${crno}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$black"
+	echo "${bold}2${bez_boje}${bijelo}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$white"
+	echo "${bold}3${bez_boje}${zeleno}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$green"
+	echo "${bold}4${bez_boje}${crveno}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$red"
+	echo "${bold}5${bez_boje}${plavo}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$blue"
+	echo "${bold}6${bez_boje}${zuto}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$yellow"
+	echo "${bold}7${bez_boje}${ljubicasto}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$magenta"
+	echo "${bold}8${bez_boje}${svplavo}★★★★★★★★★★★★★★★★★★★★★★★★★★${bez_boje}$lightblue"
+	echo " "
+	echo $echo_dostupne_boje_drugi
+}
+
+
+boja_pozadine() {
+
+	dostupne_boje
+	echo $echo_odabir_pozadina
+
+	postavi_font
+
+	echo -e '\a'
+	if [ "$font_osnova" == "promasaj" ]
+	then
+		echo $echo_zadana_pozadina
+		rback="black"
+	else
+		echo $echo_odabrano $font_osnova
+		rback="$font_osnova"
+	fi
+}
+
+
+boja_fonta() {
+
+	if [ $broj_promasaja -gt 2 ]
+	then
+		zadano
+	else
+		echo " "
+		echo $echo_odabir_fonta
+
+		postavi_font
+	fi
+
+	echo -e '\a'
+	if [ "$font_osnova" == "promasaj" ]
+	then
+		echo $echo_zadani_font
+		rfont="green"
+		sleep .5
+	else
+		echo $echo_odabrano $font_osnova
+		rfont="$font_osnova"
+	fi
+
+ ######provjera######
+
+	if [ "$rback" == "$rfont" ]
+	then
+		echo $echo_provjera1 $rfont
+		echo $echo_provjera2
+		unset rfont
+		((broj_promasaja++))
+		boja_fonta
+	fi
+
+###################
+
+}
+
+
+zadano() {
+
+if [[$broj_promasaja -gt 3 ]]
+then
+	echo $echo_zadano
+	sleep .5
+	rback="black"
+	rfont="green"
+	fv=24
+	fontfile="/usr/share/consolefonts/Uni3-Terminus24x12.psf.gz"
+	izvrsi
+else
+
+################# Zadane postavke#####################
+######### Ovdje promijeniti ako ne odgovaraju ove ############
+
+	rback="black"
+	rfont="green"
+	fv=24
+	fontfile="/usr/share/consolefonts/Uni3-Terminus24x12.psf.gz"
+	izvrsi
+fi
+#################################################
+}
+
+
+izvrsi() {
+	eval setfont "$fontfile"
+	eval setterm -foreground "$rfont" -background "$rback" -store
+	
+	clear
+	
+	echo $echo_set
+	echo $echo_set_font $fv
+	echo $echo_set_pozadina $rback
+	echo $echo_set_boja $rfont
+
+	izlaz
+}
+
+
+izlaz() {
+	unset fontsize
+	unset font
+	unset rfont
+	unset back
+	unset rback
+	unset fontfile
+	unset fv
+	unset broj_promasaja
+	unset font_osnova
+
+	exit 0
+}
+
+
+
+
+###################################################
+################## KOD #############################
+###################################################
+
+
+varijable
+
+velicina_fonta
+
+boja_pozadine
+
+boja_fonta
+
+
+############## IZVRŠENJE #######################
+
+izvrsi
+
+##############  Kraj skripte  ######################
