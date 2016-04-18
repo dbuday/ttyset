@@ -65,8 +65,8 @@ blink=`tput blink`
 
 ####### OTKOMENTIRAJ ŽELJENI JEZIK #############
 ####### UNCOMMENT DESIRED LANGUAGE##########
-lang="hr"
-#lang="en"
+#lang="hr"
+lang="en"
 #########################################
 
 #### boje  ##### colors ####
